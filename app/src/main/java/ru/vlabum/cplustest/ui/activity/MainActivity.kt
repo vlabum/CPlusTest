@@ -5,7 +5,6 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import android.os.Handler
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -22,6 +21,7 @@ import kotlinx.android.synthetic.main.content_main.*
 import layout.ItemsRVAdapter
 import ru.vlabum.cplustest.App
 import ru.vlabum.cplustest.R
+import ru.vlabum.cplustest.model.entity.Item
 import ru.vlabum.cplustest.presenter.MainPresenter
 import ru.vlabum.cplustest.service.RoomSaverResultReceiver
 import ru.vlabum.cplustest.view.IMainView
@@ -41,29 +41,6 @@ class MainActivity : MvpAppCompatActivity(), IMainView, RoomSaverResultReceiver.
         mainPresenter = MainPresenter(AndroidSchedulers.mainThread())
         App.getInstance().getAppComponent().inject(mainPresenter)
         return mainPresenter
-    }
-
-    fun startAddItemActivity() {
-        val intent = Intent(this, AddItemActivity::class.java)
-        startActivity(intent)
-    }
-
-    override fun init() {
-        rv_items.layoutManager = LinearLayoutManager(this)
-        rvAdapter = ItemsRVAdapter(mainPresenter.listItems)
-        rv_items.adapter = rvAdapter
-    }
-
-    override fun showLoading() {
-        rl_loading.visibility = View.VISIBLE
-    }
-
-    override fun hideLoading() {
-        rl_loading.visibility = View.GONE
-    }
-
-    override fun showMessage(message: String) {
-        Toast.makeText(this, message, Toast.LENGTH_LONG).show()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -87,11 +64,47 @@ class MainActivity : MvpAppCompatActivity(), IMainView, RoomSaverResultReceiver.
             ) {
                 ActivityCompat.requestPermissions(
                     this,
-                    arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                    arrayOf(
+                        Manifest.permission.READ_EXTERNAL_STORAGE,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE
+                    ),
                     PERMISSION_RESULT_CODE
                 )
             }
         }
+    }
+
+    fun startAddItemActivity() {
+        val intent = Intent(this, AddItemActivity::class.java)
+        startActivity(intent)
+    }
+
+    override fun openDetails(position: Int) {
+        val list: ArrayList<Item> = mainPresenter.listItems.items as ArrayList<Item>
+        val intent = Intent(this, ScreenSlidePagerActivity::class.java)
+            .apply {
+                putParcelableArrayListExtra(Item.ARGS_BUNDLE_LIST, list)
+                putExtra("position", position)
+            }
+        startActivity(intent)
+    }
+
+    override fun init() {
+        rv_items.layoutManager = LinearLayoutManager(this)
+        rvAdapter = ItemsRVAdapter(mainPresenter.listItems)
+        rv_items.adapter = rvAdapter
+    }
+
+    override fun showMessage(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show()
+    }
+
+    override fun showLoading() {
+        rl_loading.visibility = View.VISIBLE
+    }
+
+    override fun hideLoading() {
+        rl_loading.visibility = View.GONE
     }
 
     override fun onRequestPermissionsResult(

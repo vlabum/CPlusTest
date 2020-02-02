@@ -6,7 +6,6 @@ import io.reactivex.Scheduler
 import ru.vlabum.cplustest.model.entity.IItem
 import ru.vlabum.cplustest.model.entity.Item
 import ru.vlabum.cplustest.view.IAddItemView
-import java.io.FileDescriptor
 
 @InjectViewState
 class AddItemPresenter(val mainThread: Scheduler) : MvpPresenter<IAddItemView>() {
@@ -19,12 +18,19 @@ class AddItemPresenter(val mainThread: Scheduler) : MvpPresenter<IAddItemView>()
         item = Item("", "")
     }
 
+    override fun attachView(view: IAddItemView?) {
+        super.attachView(view)
+        item.getImagePath()?.let {
+            viewState.reloadImage(item.getImagePath()!!)
+        }
+    }
+
     fun saveItem() {
         if (!item.getName().isBlank())
             viewState.saveItem(item.getName(), item.getDescription(), item.getImagePath())
     }
 
-    fun onPaused() {
+    fun needSave() {
         saveItem()
     }
 

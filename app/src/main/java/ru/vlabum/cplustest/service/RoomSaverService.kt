@@ -4,15 +4,10 @@ import android.app.IntentService
 import android.content.Intent
 import android.os.Bundle
 import android.os.ResultReceiver
-import android.util.Log
-import dagger.android.AndroidInjection
-import dagger.android.DaggerIntentService
 import ru.vlabum.cplustest.App
 import ru.vlabum.cplustest.model.entity.Item
 import ru.vlabum.cplustest.model.entity.database.IDatabase
-import ru.vlabum.cplustest.model.entity.database.room.Database
 import ru.vlabum.cplustest.model.entity.database.room.RoomDatabase
-import javax.inject.Inject
 
 class RoomSaverService : IntentService(RoomSaverService::class.simpleName) {
 
@@ -21,7 +16,7 @@ class RoomSaverService : IntentService(RoomSaverService::class.simpleName) {
     override fun onHandleIntent(intent: Intent?) {
 
         val receiver: ResultReceiver? = App.getInstance().resultReceiver
-        Thread.sleep(2000) //TODO убрать после отладок
+        //Thread.sleep(2000)  убрать после отладок
 
         var id: String? = null
         var name: String? = null

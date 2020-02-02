@@ -8,9 +8,8 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
 import ru.vlabum.cplustest.model.entity.IItem
-import ru.vlabum.cplustest.model.entity.database.IDatabase
+import ru.vlabum.cplustest.model.entity.Item
 import ru.vlabum.cplustest.model.repo.IStorage
-import ru.vlabum.cplustest.model.repo.RoomStorage
 import ru.vlabum.cplustest.view.IItemRowView
 import ru.vlabum.cplustest.view.IMainView
 import javax.inject.Inject
@@ -40,6 +39,7 @@ open class MainPresenter(val mainThread: Scheduler) : MvpPresenter<IMainView>() 
         disposables.add(
             listItems.getClickSubject().subscribe { row ->
                 viewState.showMessage(listItems.items[row.getPos()].getName())
+                viewState.openDetails(row.getPos())
             }
         )
     }
@@ -63,7 +63,17 @@ open class MainPresenter(val mainThread: Scheduler) : MvpPresenter<IMainView>() 
                     { loadedItems ->
                         Log.d(TAG, "loaded")
                         listItems.items.clear()
-                        listItems.items.addAll(loadedItems)
+
+                        for (item: IItem in loadedItems) {
+                            val it = Item(
+                                item.getId(),
+                                item.getName(),
+                                item.getDescription(),
+                                item.getImagePath()
+                            )
+                            listItems.items.add(it)
+                        }
+
                         viewState.hideLoading()
                         viewState.notifyRV()
                     },

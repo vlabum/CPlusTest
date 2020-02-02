@@ -13,11 +13,9 @@ import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.Toast
-import androidx.core.widget.addTextChangedListener
 import com.arellomobile.mvp.MvpAppCompatActivity
 import com.arellomobile.mvp.presenter.InjectPresenter
 import com.arellomobile.mvp.presenter.ProvidePresenter
-import com.bumptech.glide.Glide
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.activity_add_item.*
 import kotlinx.android.synthetic.main.activity_main.*
@@ -26,8 +24,8 @@ import ru.vlabum.cplustest.R
 import ru.vlabum.cplustest.extensions.getPath
 import ru.vlabum.cplustest.presenter.AddItemPresenter
 import ru.vlabum.cplustest.service.RoomSaverService
+import ru.vlabum.cplustest.ui.util.setImage
 import ru.vlabum.cplustest.view.IAddItemView
-import java.io.File
 
 
 class AddItemActivity : MvpAppCompatActivity(), IAddItemView, View.OnClickListener {
@@ -96,11 +94,16 @@ class AddItemActivity : MvpAppCompatActivity(), IAddItemView, View.OnClickListen
         Toast.makeText(this, message, Toast.LENGTH_LONG).show()
     }
 
-    override fun onStop() {
-        if (!isLoadingPhoto)
-            addItemPresenter.onPaused()
-        super.onStop()
+    override fun onBackPressed() {
+        addItemPresenter.needSave()
+        super.onBackPressed()
     }
+
+//    override fun onStop() {
+//        if (!isLoadingPhoto)
+//            addItemPresenter.needSave()
+//        super.onStop()
+//    }
 
     override fun onClick(view: View?) {
         if (view is ImageView) {
@@ -112,6 +115,10 @@ class AddItemActivity : MvpAppCompatActivity(), IAddItemView, View.OnClickListen
             startActivityForResult(i, RESULT_LOAD_IMAGE)
             Log.d(TAG, "onClick ImageView")
         }
+    }
+
+    override fun reloadImage(path: String) {
+        setImage(path, iv_add_icon)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
