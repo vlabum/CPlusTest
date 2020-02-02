@@ -1,5 +1,6 @@
 package ru.vlabum.cplustest.presenter
 
+import android.util.Log
 import com.arellomobile.mvp.InjectViewState
 import com.arellomobile.mvp.MvpPresenter
 import io.reactivex.Scheduler
@@ -15,15 +16,23 @@ import ru.vlabum.cplustest.view.IMainView
 @InjectViewState
 open class MainPresenter(val mainThread: Scheduler) : MvpPresenter<IMainView>() {
 
+    val TAG = "CPLUS_MainPresenter"
+
     var listItems: IItemListPresenter = ItemListPresenter()
 
     var storage: IStorage = RoomStorage()
 
     var disposables = CompositeDisposable()
 
+    var isGrantedPermission = true
+
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
         viewState.init()
+        init()
+    }
+
+    private fun init() {
         loadItems()
         disposables.add(
             listItems.getClickSubject().subscribe { row ->
@@ -32,24 +41,30 @@ open class MainPresenter(val mainThread: Scheduler) : MvpPresenter<IMainView>() 
         )
     }
 
-    override fun detachView(view: IMainView?) {
-        super.detachView(view)
-        disposables.dispose()
+    fun onRestart() {
+        loadItems()
+    }
+
+    fun onPermission(isGranted: Boolean) {
+        isGrantedPermission = isGranted
     }
 
     fun loadItems() {
         viewState.showLoading()
+        Log.d(TAG, "loadItems after showLoading")
         disposables.add(
             storage.loadItems()
                 .subscribeOn(Schedulers.io())
                 .observeOn(mainThread)
                 .subscribe(
                     { loadedItems ->
+                        Log.d("TAG_MainPresenter", "loaded")
                         listItems.items.clear()
                         listItems.items.addAll(loadedItems)
                         viewState.hideLoading()
                     },
                     { e ->
+                        Log.d("TAG_MainPresenter", e.message)
                         viewState.hideLoading()
                         e.printStackTrace()
                     }
@@ -65,7 +80,7 @@ open class MainPresenter(val mainThread: Scheduler) : MvpPresenter<IMainView>() 
 
         override fun bind(viewI: IItemRowView) {
             viewI.setName(items[viewI.getPos()].getName())
-            viewI.setImage(items[viewI.getPos()].getPhotoPath())
+            viewI.setImage(items[viewI.getPos()].getImagePath())
         }
 
         override fun getCount(): Int {

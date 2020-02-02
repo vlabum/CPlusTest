@@ -1,20 +1,21 @@
 package ru.vlabum.cplustest.model.entity
 
 open class Item(
-    private var id: Int,
+    private var id: String,
     private var name: String,
     private var description: String? = null,
-    private var photoPath: String? = null
+    private var imagePath: String? = null
 ) : IItem {
 
-    override fun setId(id: Int) {
-        this.id = id
+    override fun setId(id: String) {
+        setName(id)
     }
 
-    override fun getId(): Int = id
+    override fun getId(): String = id
 
 
     override fun setName(name: String) {
+        this.id = name
         this.name = name
     }
 
@@ -28,10 +29,10 @@ open class Item(
     override fun getDescription(): String? = description
 
 
-    override fun setPhotoPath(uri: String?) {
-        this.photoPath = uri
+    override fun setImagePath(imagePath: String?) {
+        this.imagePath = imagePath
     }
 
-    override fun getPhotoPath(): String? = photoPath
+    override fun getImagePath(): String? = imagePath
 
 }

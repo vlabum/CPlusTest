@@ -1,28 +1,37 @@
-package ru.vlabum.cplustest.ui
+package ru.vlabum.cplustest.ui.activity
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
-import com.google.android.material.snackbar.Snackbar
+import android.os.Handler
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.arellomobile.mvp.MvpAppCompatActivity
 import com.arellomobile.mvp.presenter.InjectPresenter
 import com.arellomobile.mvp.presenter.ProvidePresenter
 import io.reactivex.android.schedulers.AndroidSchedulers
-
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
 import layout.ItemsRVAdapter
+import ru.vlabum.cplustest.App
 import ru.vlabum.cplustest.R
 import ru.vlabum.cplustest.presenter.MainPresenter
+import ru.vlabum.cplustest.service.RoomSaverResultReceiver
 import ru.vlabum.cplustest.view.IMainView
 
-class MainActivity : MvpAppCompatActivity(), IMainView {
+
+class MainActivity : MvpAppCompatActivity(), IMainView, RoomSaverResultReceiver.Receiver {
 
     lateinit var rvAdapter: ItemsRVAdapter
+
+    private val PERMISSION_RESULT_CODE = 1200
 
     @InjectPresenter
     lateinit var mainPresenter: MainPresenter
@@ -60,9 +69,46 @@ class MainActivity : MvpAppCompatActivity(), IMainView {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
+        App.getInstance().resultReceiver.setReceiver(this) //WeakReference
+        mainPresenter.onPermission(true)
 
         fab.setOnClickListener {
             startAddItemActivity()
+        }
+
+        if (Build.VERSION.SDK_INT >= 23) {
+            if (
+                ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED
+                ||
+                ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED
+            ) {
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                    PERMISSION_RESULT_CODE
+                )
+            }
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        when (requestCode) {
+            PERMISSION_RESULT_CODE -> {
+                if (grantResults.isNotEmpty()
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED
+                    && grantResults[1] == PackageManager.PERMISSION_GRANTED
+                ) {
+                    mainPresenter.onPermission(true)
+                } else {
+                    mainPresenter.onPermission(false)
+                }
+            }
         }
     }
 
@@ -81,4 +127,11 @@ class MainActivity : MvpAppCompatActivity(), IMainView {
             else -> super.onOptionsItemSelected(item)
         }
     }
+
+    override fun onReceiveResult(resultCode: Int, data: Bundle?) {
+        if (resultCode == RoomSaverResultReceiver.RESULT_CODE_OK)
+            mainPresenter.onRestart()
+        showMessage(resultCode.toString())
+    }
+
 }

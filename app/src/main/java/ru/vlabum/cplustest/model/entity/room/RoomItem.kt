@@ -8,27 +8,28 @@ import ru.vlabum.cplustest.model.entity.IItem
 @Entity
 class RoomItem() : IItem {
 
-    constructor(id: Int, name: String) : this() {
+    constructor(id: String, name: String, imagePath: String? = null) : this() {
         this.id = id
         this.name = name
+        this.imagePath = imagePath
     }
 
     @NonNull
     @PrimaryKey
-    internal var id: Int = 0
+    internal lateinit var id: String
 
     internal lateinit var name: String
 
     internal var description: String? = null
 
-    internal var photoPath: String? = null
+    internal var imagePath: String? = null
 
 
-    override fun setId(id: Int) {
+    override fun setId(id: String) {
         this.id = id
     }
 
-    override fun getId(): Int = id
+    override fun getId(): String = id
 
 
     override fun setName(name: String) {
@@ -45,10 +46,10 @@ class RoomItem() : IItem {
     override fun getDescription(): String? = description
 
 
-    override fun setPhotoPath(path: String?) {
-        this.photoPath = path
+    override fun setImagePath(path: String?) {
+        this.imagePath = path
     }
 
-    override fun getPhotoPath(): String? = photoPath
+    override fun getImagePath(): String? = imagePath
 
 }

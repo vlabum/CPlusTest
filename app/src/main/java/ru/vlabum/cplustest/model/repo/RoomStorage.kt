@@ -9,12 +9,12 @@ class RoomStorage : IStorage {
         return Single.create {emitter ->
             //TODO: завязать на Room
             val items: List<RoomItem> = arrayListOf(
-                RoomItem(1, "name1"),
-                RoomItem(2, "name2"),
-                RoomItem(3, "name3"),
-                RoomItem(4, "name4"),
-                RoomItem(5, "name5"),
-                RoomItem(6, "name6")
+                RoomItem("name1", "name1", "/storage/emulated/0/Download/IMG_8329_2.JPG"),
+                RoomItem("name2", "name2", "/storage/emulated/0/Download/IMG_8329_2.JPG"),
+                RoomItem("name3", "name3", "/storage/emulated/0/Download/IMG_8329_2.JPG"),
+                RoomItem("name4", "name4", "/storage/emulated/0/Download/IMG_8329_2.JPG"),
+                RoomItem("name5", "name5", "/storage/emulated/0/Download/IMG_8329_2.JPG"),
+                RoomItem("name6", "name6", "/storage/emulated/0/Download/IMG_8329_2.JPG")
                 )
             emitter.onSuccess(items)
         }
