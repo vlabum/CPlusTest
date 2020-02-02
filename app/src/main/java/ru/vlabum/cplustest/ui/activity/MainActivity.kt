@@ -39,6 +39,7 @@ class MainActivity : MvpAppCompatActivity(), IMainView, RoomSaverResultReceiver.
     @ProvidePresenter
     fun providePresenter(): MainPresenter {
         mainPresenter = MainPresenter(AndroidSchedulers.mainThread())
+        App.getInstance().getAppComponent().inject(mainPresenter)
         return mainPresenter
     }
 
@@ -134,4 +135,7 @@ class MainActivity : MvpAppCompatActivity(), IMainView, RoomSaverResultReceiver.
         showMessage(resultCode.toString())
     }
 
+    override fun notifyRV() {
+        rvAdapter.notifyDataSetChanged()
+    }
 }

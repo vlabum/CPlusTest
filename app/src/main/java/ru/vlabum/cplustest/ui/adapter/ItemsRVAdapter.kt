@@ -68,7 +68,7 @@ class ItemsRVAdapter(var listItems: IItemListPresenter) :
                 path?.let {
 
                     val selectedImage: Uri = Uri.fromFile(File(path))
-
+                        //TODO попробовать через Glide
                         if (Build.VERSION.SDK_INT < 28) {
                             val bitmap = MediaStore.Images.Media.getBitmap(
                                 itemView.context.contentResolver,
@@ -78,7 +78,6 @@ class ItemsRVAdapter(var listItems: IItemListPresenter) :
                         }
                         else {
                             val source = ImageDecoder.createSource(itemView.context.contentResolver, selectedImage)
-
                             val bitmap = ImageDecoder.decodeBitmap(source)
                             itemView.iv_icon.setImageBitmap(bitmap)
                         }

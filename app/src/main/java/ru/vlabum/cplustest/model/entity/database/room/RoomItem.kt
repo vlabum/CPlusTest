@@ -1,4 +1,4 @@
-package ru.vlabum.cplustest.model.entity.room
+package ru.vlabum.cplustest.model.entity.database.room
 
 import androidx.annotation.NonNull
 import androidx.room.Entity

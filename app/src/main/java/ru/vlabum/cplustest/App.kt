@@ -2,6 +2,9 @@ package ru.vlabum.cplustest
 
 import android.app.Application
 import android.os.Handler
+import ru.vlabum.cplustest.di.AppComponent
+import ru.vlabum.cplustest.di.DaggerAppComponent
+import ru.vlabum.cplustest.model.entity.database.room.Database
 import ru.vlabum.cplustest.service.RoomSaverResultReceiver
 
 
@@ -24,13 +27,16 @@ class App : Application() {
     //TODO: попробовать добавить абстракцию и воткнуть в перзенер
     lateinit var resultReceiver: RoomSaverResultReceiver
 
+    private lateinit var appComponent: AppComponent
+
+    fun getAppComponent() = appComponent
 
     override fun onCreate() {
         super.onCreate()
         instance = this
         resultReceiver = RoomSaverResultReceiver(Handler())
-//        Database.create(this)
-//        appComponent = DaggerAppComponent.builder().build()
+        appComponent = DaggerAppComponent.builder().build()
+        Database.create(this)
 //        appComponent.inject(this)
     }
 

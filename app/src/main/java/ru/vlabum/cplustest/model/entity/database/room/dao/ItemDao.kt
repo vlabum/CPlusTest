@@ -1,7 +1,7 @@
-package ru.vlabum.cplustest.model.entity.room.dao
+package ru.vlabum.cplustest.model.entity.database.room.dao
 
 import androidx.room.*
-import ru.vlabum.cplustest.model.entity.room.RoomItem
+import ru.vlabum.cplustest.model.entity.database.room.RoomItem
 
 @Dao
 interface ItemDao {
@@ -37,7 +37,7 @@ interface ItemDao {
     abstract fun getAll(): List<RoomItem>
 
     @Query("SELECT * FROM RoomItem WHERE name = :name LIMIT 1")
-    abstract fun findByUrl(name: String): RoomItem
+    abstract fun findByName(name: String): RoomItem
 
     @Query("SELECT 1 as isExists FROM RoomItem WHERE name = :name LIMIT 1")
     abstract fun contains(name: String): Int

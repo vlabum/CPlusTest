@@ -8,10 +8,12 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
 import ru.vlabum.cplustest.model.entity.IItem
+import ru.vlabum.cplustest.model.entity.database.IDatabase
 import ru.vlabum.cplustest.model.repo.IStorage
 import ru.vlabum.cplustest.model.repo.RoomStorage
 import ru.vlabum.cplustest.view.IItemRowView
 import ru.vlabum.cplustest.view.IMainView
+import javax.inject.Inject
 
 @InjectViewState
 open class MainPresenter(val mainThread: Scheduler) : MvpPresenter<IMainView>() {
@@ -20,7 +22,8 @@ open class MainPresenter(val mainThread: Scheduler) : MvpPresenter<IMainView>() 
 
     var listItems: IItemListPresenter = ItemListPresenter()
 
-    var storage: IStorage = RoomStorage()
+    @Inject
+    lateinit var storage: IStorage// = RoomStorage(database)
 
     var disposables = CompositeDisposable()
 
@@ -58,13 +61,14 @@ open class MainPresenter(val mainThread: Scheduler) : MvpPresenter<IMainView>() 
                 .observeOn(mainThread)
                 .subscribe(
                     { loadedItems ->
-                        Log.d("TAG_MainPresenter", "loaded")
+                        Log.d(TAG, "loaded")
                         listItems.items.clear()
                         listItems.items.addAll(loadedItems)
                         viewState.hideLoading()
+                        viewState.notifyRV()
                     },
                     { e ->
-                        Log.d("TAG_MainPresenter", e.message)
+                        Log.d(TAG, e.message)
                         viewState.hideLoading()
                         e.printStackTrace()
                     }

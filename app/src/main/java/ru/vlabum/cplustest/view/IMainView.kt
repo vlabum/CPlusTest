@@ -8,6 +8,8 @@ interface IMainView : MvpView {
     fun showLoading()
     fun hideLoading()
 
+    fun notifyRV()
+
     fun showMessage(message: String)
 
 }

@@ -7,10 +7,13 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.core.widget.addTextChangedListener
 import com.arellomobile.mvp.MvpAppCompatActivity
 import com.arellomobile.mvp.presenter.InjectPresenter
 import com.arellomobile.mvp.presenter.ProvidePresenter
@@ -20,6 +23,7 @@ import kotlinx.android.synthetic.main.activity_add_item.*
 import kotlinx.android.synthetic.main.activity_main.*
 import ru.vlabum.cplustest.App
 import ru.vlabum.cplustest.R
+import ru.vlabum.cplustest.extensions.getPath
 import ru.vlabum.cplustest.presenter.AddItemPresenter
 import ru.vlabum.cplustest.service.RoomSaverService
 import ru.vlabum.cplustest.view.IAddItemView
@@ -48,6 +52,31 @@ class AddItemActivity : MvpAppCompatActivity(), IAddItemView, View.OnClickListen
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_item)
         setSupportActionBar(toolbar)
+
+        et_add_name.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                addItemPresenter.onNameTyped(s.toString())
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            }
+        })
+
+        et_add_description.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                addItemPresenter.onDescriptionTyped(s.toString())
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            }
+        })
+
     }
 
     override fun init() {
@@ -97,12 +126,12 @@ class AddItemActivity : MvpAppCompatActivity(), IAddItemView, View.OnClickListen
                         it
                     )
                     iv_add_icon.setImageBitmap(bitmap)
-                }
-                else {
+                } else {
                     val source = ImageDecoder.createSource(this.contentResolver, it)
                     val bitmap = ImageDecoder.decodeBitmap(source)
                     iv_add_icon.setImageBitmap(bitmap)
                 }
+                addItemPresenter.onImageSelected(selectedImage.getPath(this.applicationContext))
             }
         }
         isLoadingPhoto = false

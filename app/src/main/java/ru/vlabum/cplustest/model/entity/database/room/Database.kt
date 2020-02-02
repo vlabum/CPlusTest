@@ -1,9 +1,9 @@
-package ru.vlabum.cplustest.model.entity.room
+package ru.vlabum.cplustest.model.entity.database.room
 
 import android.content.Context
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import ru.vlabum.cplustest.model.entity.room.dao.ItemDao
+import ru.vlabum.cplustest.model.entity.database.room.dao.ItemDao
 import java.lang.RuntimeException
 
 @androidx.room.Database(entities = [RoomItem::class], version = 1)

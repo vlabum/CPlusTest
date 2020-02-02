@@ -5,7 +5,14 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.ResultReceiver
 import android.util.Log
+import dagger.android.AndroidInjection
+import dagger.android.DaggerIntentService
 import ru.vlabum.cplustest.App
+import ru.vlabum.cplustest.model.entity.Item
+import ru.vlabum.cplustest.model.entity.database.IDatabase
+import ru.vlabum.cplustest.model.entity.database.room.Database
+import ru.vlabum.cplustest.model.entity.database.room.RoomDatabase
+import javax.inject.Inject
 
 class RoomSaverService : IntentService(RoomSaverService::class.simpleName) {
 
@@ -15,11 +22,23 @@ class RoomSaverService : IntentService(RoomSaverService::class.simpleName) {
 
         val receiver: ResultReceiver? = App.getInstance().resultReceiver
         Thread.sleep(2000) //TODO убрать после отладок
-        val id: String? = intent?.getStringExtra(App.ITEM_NAME)
-        val name: String? = intent?.getStringExtra(App.ITEM_NAME)
-        val description: String? = intent?.getStringExtra(App.ITEM_DESCRIPTION)
-        val imagePath: String? = intent?.getStringExtra(App.ITEM_IMAGE_PATH)
 
+        var id: String? = null
+        var name: String? = null
+        var description: String? = null
+        var imagePath: String? = null
+
+        intent?.let {
+            id = intent.getStringExtra(App.ITEM_NAME)
+            name = intent.getStringExtra(App.ITEM_NAME)
+            description = intent.getStringExtra(App.ITEM_DESCRIPTION)
+            imagePath = intent.getStringExtra(App.ITEM_IMAGE_PATH)
+
+            if (id != null && name != null) {
+                val database: IDatabase = RoomDatabase()
+                database.saveItem(Item(id!!, name!!, description, imagePath))
+            }
+        }
 
         receiver?.let {
             val resultCode: Int

@@ -16,11 +16,12 @@ class AddItemPresenter(val mainThread: Scheduler) : MvpPresenter<IAddItemView>()
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
         viewState.init()
-        item = Item("name1", "name1")
+        item = Item("", "")
     }
 
     fun saveItem() {
-        viewState.saveItem(item.getName(), item.getDescription(), item.getImagePath())
+        if (!item.getName().isBlank())
+            viewState.saveItem(item.getName(), item.getDescription(), item.getImagePath())
     }
 
     fun onPaused() {
